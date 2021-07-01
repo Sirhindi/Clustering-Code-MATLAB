@@ -1,28 +1,22 @@
 %%%%% November 2019 
-%%%%% Spectral clustering demo using centroid, hierarchical, spectral 
+%%%%% Clustering demo using centroid, hierarchical, spectral 
 %%%%% and density-based algorithms.
 close all
 clc
 clear all
 
-%% Load Debye-Scherrer image data
-dim=[200 200];    %512, 128, 64
-images={'Max1' 'Si12' 'LaB6' 'Tilted'};
-algos={'kmeans' 'hc-comp' 'hc-sng' 'hc-avg' 'sc' 'sc-shi' 'sc-njw' 'dbscan'};
+%% Load Debye-Scherrer image, pre-process to get data points of rings
+% I=imread('Si12_0000.tif');
+% bin_I=pre_process(I);
+% I_deb_bin=imresize(bin_I,[200 200]);
+% [x y] = find(bin_I);
+% D= [y x];
 
-% [D]=load_deb_data('LaB6_0021',dim);
-% [D]=load_deb_data('max1',dim);
-% [D]=load_deb_data('tilted_001',dim);
-% [D]=load_deb_data('Si12_0000',dim);
-
-%% Load true labels
+%% Load ground truth labels
 true_labels = load_labels('./Data_Debye/Ground Truth/Si12_0000',dim);
 D=true_labels(:,1:2);
 
-%% Noise-removal for HC-Single
-% I=imread('Si12_0000.tif');
-% I_bin=pre_process(I);
-% I_deb_bin=imresize(I_bin,[200 200]);
+%% Noise-removal for HC-Single (un-comment the code for reading data from image above)
 % CC = bwconncomp(I_deb_bin);
 % numPixels = cellfun(@numel,CC.PixelIdxList);
 % %[biggest, idx] = max(numPixels);
@@ -67,7 +61,7 @@ tic
 %   labels = spectral_clustering( data,4,1.0,'njw','full',10,4);
 %   labels = spectral_clustering( D,k_l,0.3,'njw','full');
 %   labels = spectral_clustering(D,k_m,0.6,'njw','full');
-%   labels = spectral_clustering(D,k_s,0.8,'njw','full');
+%   labels = spectral_clustering(D,k_s,0.8,'njw','full');  %% for Si12_0000
 %   labels = spectral_clustering(D,k_t,1.5,'njw','full');
 
 %% DBSCAN(data, epsilon, minpts) 
@@ -79,7 +73,7 @@ tic
 %% Kmeans
 %     labels=kmeans(D,k_l,'EmptyAction','singleton');
  
-% %% Agglomerative
+%% Agglomerative
 %     d=pdist(D,'euclidean');
 %     l=linkage(d,'single');
 %     labels=cluster(l,'maxclust',k_s);
@@ -91,21 +85,6 @@ t(i)=toc;
 % exportgraphics(gcf,['./Png Results/' algos{7} '_' images{4} '.png'], 'resolution', 72);
 % exportgraphics(gcf,['./Png Results/Fig13/' algos{7} '_cg_' images{3} '.png'], 'resolution', 72);
 % close all
-
-% figure,
-% bar(sort(histcounts(labels),'descend'),0.8,'FaceColor',[0.4 0.6 0.9]);
-% xlabel('Number of clusters')
-% ylabel('Cluster cardinality')
-% ax = gca;
-% ax.YAxis.FontSize = 16;
-% ax.XAxis.FontSize = 16;
-
-
-%% Evaulate clusters using IED criteria
-%     im_size=[dim,dim];
-%     [cl_ang(i,:),avg_dist(i,:)] = evaluateClusteringResults(labels,D_S,k_s,im_size);
-%     mean(cl_ang(i,:))
-%     mean(avg_dist(i,:))
 
 %% Evaluate using NMI
       z(i) = nmi(true_labels(:,3), labels);
@@ -145,14 +124,6 @@ disp(['Standard deviation for ',num2str(i),' runs is ',num2str(std_ari)]);
 
 
 
-
-
-
-
-
-
-
-
 %% Find accuracy for random and deterministic algorithms
   %j(i,:)= jaccard(labels,true_labels(:,3))
         %  jaccard(A,B) = TP / (TP + FP + FN)
@@ -167,6 +138,4 @@ disp(['Standard deviation for ',num2str(i),' runs is ',num2str(std_ari)]);
 % disp(['Good detections: ', num2str((count_good/n)*100)]);
 % disp(['Bad detections: ', num2str((count_bad/n)*100)]);
 
-% figure, 
-% plot_quant_results(n,z,ri,ari,t)
-% saveas(gcf,['resultTilted_hier_comp_quant_results' num2str(dim)],'epsc')
+
