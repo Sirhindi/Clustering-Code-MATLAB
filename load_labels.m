@@ -7,8 +7,8 @@ function labels=load_labels(dir_path,dim)
     [filepath,name,ext]=fileparts([folder filesep names(i).name]);
     inp=imread([filepath filesep name ext]);
     inp=inp(:,:,1);
-    inp=imresize(inp, dim);
-%     inp=imresize(inp, dim,'nearest');
+%    inp=imresize(inp, dim);
+    inp=imresize(inp, dim,'nearest');
 %   figure, imshow(inp)
     [data_x,data_y]=find(inp);
     temp=[data_y data_x zeros(size(data_x,1),1)];
